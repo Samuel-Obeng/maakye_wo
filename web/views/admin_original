@@ -1,0 +1,190 @@
+<%- include('./partials/header.ejs');-%>
+    <%- include('./partials/nav.ejs');-%>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-7 col-lg-8">
+
+
+                    <!-- Change violator array, to notifications array. -->
+                    <% if(notifications == null){ %>
+                        <%- include('./partials/empty_list'); -%>
+                            <% }else{ %>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">
+                                                Notification Queue
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <%for(let i = 0; i < notifications.length; i++){%>
+                                            <tr>
+                                                <th scope="row">
+                                                    <%= (1+i) %>
+                                                </th>
+                                                <td>
+                                                    <p>
+                                                        Administrative Action:
+                                                        <span class="text-muted"> #X </span>
+                                                        <span class="float-right"> Date Created: 
+                                                            <span class="text-muted"> 
+                                                                <!-- <%= notifications[i].date %>  -->
+                                                            </span>
+                                                        </span>
+                                                    </p>
+                                                    <hr>
+                                                    <p class="text-muted">
+                                                        <!-- <%= notifications[i].details %> -->
+                                                    </p>
+                                                    <p class="tex-muted">
+                                                        By
+                                                        <!-- <%= notifications[0].user_id %> -->
+                                                    </p>
+                                                    <button onclick="previewerFunc(event)" class="nav-link btn btn-outline-dark btn-sm">Review</button>
+                                            </tr>
+                                            <%}%>
+
+
+                                    </tbody>
+                                </table>
+
+                </div>
+
+                <div class="col-12 col-md-5 col-lg-4" style="margin-top: 30px;">
+                    <p>
+                        Administrative Action:
+                        <span class="text-muted"> #1 </span>
+                    </p>
+                    <p>
+                        Date Created:
+                        <span id="notification_date" class="text-muted"> <%= notifications[0].date %>  </span>
+                    </p>
+                    <hr>
+                    <p id="notification_details">
+                        <%= notifications[0].details %>
+                    </p>
+                    <p id="action_by">
+                        <%= notifications[0].user_id %>
+                    </p>
+                    <form action="#" method="">
+                        <input class="nav-link btn btn-outline-dark btn-block btn-sm" type="submit" value="Revert Action">
+                    </form>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn-outline-dark add_user_btn btn-white btn-sm btn-floating" data-toggle="modal" data-target="#createNewUsersDialog">
+            <img class="add_user_img" src="/img/add.svg" alt="" srcset="">
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="createNewUsersDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Create New User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="">Spin up new user accounts, for other user's with varying levels of access.</p>
+
+                        <!-- sign up forms -->
+                        <form action="/root_signup" method="POST">
+                            <div class="md-form">
+                                <input type="text" id="full_name" class="form-control" name="full_name">
+                                <label for="full_name">Full name</label>
+                            </div>
+
+                            <div class="md-form">
+                                <input type="text" id="email_address" class="form-control" name="email_address">
+                                <label for="email_address">Email address</label>
+                            </div>
+
+                            <div class="md-form">
+                                <input type="text" id="phone_number" class="form-control" name="phone_number">
+                                <label for="phone_number">Phone number</label>
+                            </div>
+
+                            <div class="md-form">
+                                <select class="form-control" name="access_level">
+                                    <option selected>Open this select menu</option>
+                                    <option value="1">Low Teir</option>
+                                    <option value="2">Mid Teir</option>
+                                    <option value="3">High Teir</option>
+                                  </select>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="hidden" value="1" name="access_level">
+                                <input type="Submit" value="Submit" class="btn btn-outline-dark btn-block btn-sm">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn-outline-dark minus_user_btn btn-white btn-sm btn-floating" data-toggle="modal" data-target="#existingUsersDialog">
+            <img class="add_user_img" src="/img/minus.svg" alt="" srcset="">
+        </button>
+
+        <div class="modal fade" id="existingUsersDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modify user access Or Drop user</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="">Modify user account's access levels.</p>
+
+                        <!-- sign up forms -->
+                        <form action="/modify_user" method="get">
+                            <div class="md-form">
+                                <select class="form-control" name="user_to_modify">
+                                    <option selected>Open this select menu</option>
+                                    <% for(let j = 0; j < users.length; j++){ %>
+                                        <option type="text" value="<%= users[j]._id %>"> <%= users[j].full_name %> with access level <%= users[j].access_level %></option>
+                                    <% } %>
+                                  </select>
+                            </div>
+
+                            <div class="md-form">
+                                <input type="text" id="current_acccess_level" class="form-control" name="current_acccess_level">
+                                <label for="current_acccess_level">Reset User's Access Level</label>
+                            </div>
+
+                            <input type="Submit" value="Submit" class="btn btn-outline-dark btn-sm btn-block">
+                        </form>
+
+                        <hr>
+                        <p class="">Delete user accounts.</p>
+
+                        <form action="" method="get">
+                            <div class="md-form">
+                                <select class="form-control" name="user_to_modify">
+                                    <option selected>Open this select menu</option>
+                                    <% for(let j = 0; j < users.length; j++){ %>
+                                        <option type="text" value="<%= users[j]._id %>"> <%= users[j].full_name %> with access level <%= users[j].access_level %></option>
+                                    <% } %>
+                                  </select>
+                            </div>
+                            <input type="Submit" value="Drop User" class="btn btn-outline-dark btn-sm btn-block">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <%- include('./partials/footer'); -%>
